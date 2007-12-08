@@ -62,14 +62,18 @@ public class XalanExt {
             throw new RuntimeException(e);
         }
     }
+
+    public Node sparql(ExpressionContext ex, String file, String queryStr) {
+	return sparql(ex, file, queryStr, null);
+    }
     
-    public Node sparql(ExpressionContext ec, String file, String queryStr) {
+    public Node sparql(ExpressionContext ec, String file, String queryStr, String rdfLang) {
         // logger.info("Método invocado!, fichero = \"" + file + "\", " +
         //        "query = \"" + queryStr + "\"");
         try {            
             Query query = QueryFactory.create(queryStr);
             Model model = ModelFactory.createDefaultModel();
-            model.read(file);
+            model.read(file,rdfLang);
             QueryExecution qe = QueryExecutionFactory.create(query, model);
             return executeAndSerializeAsXml(qe);
         } catch (RuntimeException e) {
