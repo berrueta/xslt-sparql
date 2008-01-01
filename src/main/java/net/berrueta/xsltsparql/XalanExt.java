@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.apache.xalan.extensions.ExpressionContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.traversal.NodeIterator;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -62,6 +63,10 @@ public class XalanExt {
 	    logger.error("Error", e);
 	    throw new RuntimeException(e);
 	}
+    }
+    
+    public Object readModel(ExpressionContext ec, NodeIterator ni) {
+    	throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public Object addToModel(ExpressionContext ec, Object model, String url) {
