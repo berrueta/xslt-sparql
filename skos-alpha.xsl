@@ -11,7 +11,7 @@
   </xalan:component>
 
   <xsl:param name="rdf-file"
-	     select="'file:///Users/diego/scratch/svn/transforma-rdf/xslt-sparql/skos/ipsv.rdf'"/>
+	     select="'file:///Users/berrueta/Documents/transforma-rdf/xslt-sparql/skos/ipsv.rdf'"/>
   <!--xsl:param name="rdf-file"
 	     select="'file:///Users/diego/scratch/svn/transforma-rdf/xslt-sparql/skos/gcl2.1.rdf'"/-->
   <!--xsl:param name="rdf-url"
