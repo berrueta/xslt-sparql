@@ -27,7 +27,7 @@ $M2_REPO/com/hp/hpl/jena/arq/2.1/arq-2.1.jar:\
 $M2_REPO/com/hp/hpl/jena/iri/0.5/iri-0.5.jar:\
 $M2_REPO/com/hp/hpl/jena/concurrent-jena/1.3.2/concurrent-jena-1.3.2.jar:\
 $M2_REPO/com/hp/hpl/jena/jena/2.5.4/jena-2.5.4.jar:\
-$M2_REPO/icu4j/icu4j/3.6.1/icu4j-3.6.1.jar \
+$M2_REPO/com/ibm/icu/icu4j/3.4.4/icu4j-3.4.4.jar \
 org.apache.xalan.xslt.Process -IN $INPUT_FILE -XSL $XSL_FILE
 
 
