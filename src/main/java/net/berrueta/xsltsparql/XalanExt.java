@@ -132,8 +132,6 @@ public class XalanExt {
 		}    }
 
 	public Node sparqlEndpoint(ExpressionContext ec, String endpoint, String queryStr) {
-		// logger.info("Método invocado!, endpoint = \"" + endpoint + "\", " +
-		//        "query = \"" + queryStr + "\"");
 		try {
 			Query query = QueryFactory.create(queryStr);
 			QueryExecution qe = QueryExecutionFactory.sparqlService(endpoint, query);
@@ -152,8 +150,6 @@ public class XalanExt {
 	}
 
 	public Node sparql(ExpressionContext ec, String file, String queryStr, String rdfLang) {
-		// logger.info("Método invocado!, fichero = \"" + file + "\", " +
-		//        "query = \"" + queryStr + "\"");
 		try {            
 			Query query = QueryFactory.create(queryStr);
 			Model model = ModelFactory.createDefaultModel();
@@ -171,7 +167,6 @@ public class XalanExt {
 
 	private Node executeAndSerializeAsXml(QueryExecution qe) throws SAXException, IOException, ParserConfigurationException {
 		String xmlResult = ResultSetFormatter.asXMLString(qe.execSelect());
-		//logger.fatal("RESULT: " + xmlResult);
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		dbf.setNamespaceAware(true);
 		Reader reader = new StringReader(xmlResult);
