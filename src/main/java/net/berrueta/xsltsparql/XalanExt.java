@@ -13,9 +13,9 @@ import org.apache.log4j.Logger;
 import org.apache.xalan.extensions.ExpressionContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.traversal.NodeIterator;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -24,6 +24,7 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.arp.DOM2Model;
 
 public class XalanExt {
 
@@ -65,8 +66,16 @@ public class XalanExt {
 		}
 	}
 
-	public Object readModel(ExpressionContext ec, NodeIterator ni) {
-		throw new UnsupportedOperationException("Not yet implemented");
+	public Object readModel(ExpressionContext ec, Node node) {
+		try {
+			Model model = ModelFactory.createDefaultModel();
+			DOM2Model dom2model = DOM2Model.createD2M("", model);
+			dom2model.load(node);
+			return model;
+		} catch (Exception e) {
+			logger.error("Error", e);
+			throw new RuntimeException(e);
+		}
 	}
 
 	public Object addToModel(ExpressionContext ec, Object model, String url) {
