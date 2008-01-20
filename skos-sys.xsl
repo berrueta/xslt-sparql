@@ -71,10 +71,10 @@
 	<title>Vocabulary: systematic display</title>
 	<style type="text/css">
 	  .prefLabel {
-	  font-weight:bold;
+	    font-weight:bold;
 	  }
 	  .description {
-	  font-size:-1;
+	    font-size:-1;
 	  }
 	</style>
       </head>
@@ -85,10 +85,12 @@
 	  <xsl:apply-templates
 	      select="sparql:sparqlModel($model, concat(sparql:commonPrefixes(),
 		      'SELECT ?concept ?prefLabel
-		      WHERE {?x skos:hasTopConcept ?concept .
-		      ?concept skos:prefLabel ?prefLabel .
-		      FILTER (lang(?prefLabel)=&quot;',$lang,'&quot;) }
-		      ORDER BY ?prefLabel'))/results:results/results:result"
+	 	       WHERE {
+                          ?x skos:hasTopConcept ?concept .
+		          ?concept skos:prefLabel ?prefLabel .
+		          FILTER (lang(?prefLabel)=&quot;',$lang,'&quot;)
+                       }
+		       ORDER BY ?prefLabel'))/results:results/results:result"
 	      mode="prefLabelEntry">
 	    <xsl:with-param name="model" select="$model"/>
 	  </xsl:apply-templates>
@@ -112,19 +114,23 @@
 	<xsl:apply-templates mode="relatedTerms"
 			     select="sparql:sparqlModel($model, concat(sparql:commonPrefixes(),
 				     'SELECT ?relatedConcept ?prefLabel
-				     WHERE { &lt;',$conceptUri,'&gt; skos:relatedTerm ?relatedConcept .
-				     ?relatedConcept skos:prefLabel ?prefLabel .
-				     FILTER (lang(?prefLabel)=&quot;',$lang,'&quot;) }
-				     ORDER BY ?prefLabel'))/results:results/results:result">
+				      WHERE {
+				         &lt;',$conceptUri,'&gt; skos:related ?relatedConcept .
+				         ?relatedConcept skos:prefLabel ?prefLabel .
+				         FILTER (lang(?prefLabel)=&quot;',$lang,'&quot;)
+				      }
+				      ORDER BY ?prefLabel'))/results:results/results:result">
 	  <xsl:with-param name="model" select="$model"/>
 	</xsl:apply-templates>
 	<xsl:apply-templates mode="prefLabelEntry"
 			     select="sparql:sparqlModel($model, concat(sparql:commonPrefixes(),
 				     'SELECT ?concept ?prefLabel
-				     WHERE { &lt;',$conceptUri,'&gt; skos:narrower ?concept .
-				     ?concept skos:prefLabel ?prefLabel .
-				     FILTER (lang(?prefLabel)=&quot;',$lang,'&quot;) }
-				     ORDER BY ?prefLabel'))/results:results/results:result">
+				      WHERE {
+				         &lt;',$conceptUri,'&gt; skos:narrower ?concept .
+				         ?concept skos:prefLabel ?prefLabel .
+				         FILTER (lang(?prefLabel)=&quot;',$lang,'&quot;)
+				      }
+				      ORDER BY ?prefLabel'))/results:results/results:result">
 	  <xsl:with-param name="model" select="$model"/>
 	</xsl:apply-templates>
       </ul>
