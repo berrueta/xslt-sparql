@@ -122,34 +122,53 @@
 				      ORDER BY ?prefLabel'))/results:results/results:result">
 	  <xsl:with-param name="model" select="$model"/>
 	</xsl:apply-templates>
-	<xsl:apply-templates mode="prefLabelEntry"
-			     select="sparql:sparqlModel($model, concat(sparql:commonPrefixes(),
+	<xsl:variable name="narrowerConcepts"
+		      select="sparql:sparqlModel($model, concat(sparql:commonPrefixes(),
 				     'SELECT ?concept ?prefLabel
 				      WHERE {
 				         &lt;',$conceptUri,'&gt; skos:narrower ?concept .
 				         ?concept skos:prefLabel ?prefLabel .
 				         FILTER (lang(?prefLabel)=&quot;',$lang,'&quot;)
 				      }
-				      ORDER BY ?prefLabel'))/results:results/results:result">
+				      ORDER BY ?prefLabel'))/results:results/results:result" />
+	<xsl:call-template name="findSuitableCollection">
+	  <xsl:with-param name="model" select="$model"/>
+	  <xsl:with-param name="forConcepts" select="$narrowerConcepts"/>
+	</xsl:call-template>
+	<xsl:apply-templates select="$narrowerConcepts" mode="prefLabelEntry">	
 	  <xsl:with-param name="model" select="$model"/>
 	</xsl:apply-templates>
       </ul>
     </li>
   </xsl:template>
-<!--	  <xsl:variable name="sparqlQuery"
-	      select="concat(sparql:commonPrefixes(),
-		      'PREFIX compl: &lt;http://berrueta.net/skos-compl#&gt;
-		      SELECT ?sndconcept ?abbr ?label
-		      WHERE { &lt;',normalize-space(results:binding[@name='concept']),'&gt; ?p ?sndconcept .
-		      ?sndconcept skos:prefLabel ?label .
-		      ?p compl:abbr ?abbr }
-		      ORDER BY ?abbr ?label')"/>
--->
 
   <xsl:template match="results:result" mode="relatedTerms">
     <li>
       RT <xsl:value-of select="results:binding[@name='prefLabel']"/>
     </li>
+  </xsl:template>
+
+  <xsl:template name="findSuitableCollection">
+    <xsl:param name="model"/>
+    <xsl:param name="forConcepts"/>
+    <xsl:if test="count($forConcepts) &gt; 0">
+      <!-- First, build the SPARQL query -->
+      <xsl:variable name="sparqlQuery">
+	SELECT ?collection ?collectionLabel
+	WHERE {
+	?collection rdf:type skos:Collection .
+	?collection rdfs:label ?collectionLabel .
+	<xsl:for-each select="$forConcepts">
+	  ?collection skos:member &lt;<xsl:value-of select="normalize-space(results:binding[@name='concept'])"/>&gt; .
+	</xsl:for-each>
+	FILTER (lang(?collectionLabel)="<xsl:value-of select="$lang"/>")
+	}
+      </xsl:variable>
+      <!-- Secondly, execute the SPARQL query -->
+      <xsl:for-each select="sparql:sparqlModel($model,concat(sparql:commonPrefixes(),string($sparqlQuery)))/results:results/results:result">
+	(<xsl:value-of select="results:binding[@name='collectionLabel']"/>)
+      </xsl:for-each>
+    </xsl:if>
   </xsl:template>
 
   <!-- Second pass ******************************************* -->
