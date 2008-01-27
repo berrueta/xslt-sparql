@@ -148,11 +148,15 @@
     </li>
   </xsl:template>
 
+  <!-- This named template prints a heading for the list of
+       narrower concepts in the tree. The title of the heading
+       is taken from the label of a collection which contains
+       all the narrower concepts -->
+
   <xsl:template name="findSuitableCollection">
     <xsl:param name="model"/>
     <xsl:param name="forConcepts"/>
     <xsl:if test="count($forConcepts) &gt; 0">
-      <!-- First, build the SPARQL query -->
       <xsl:variable name="sparqlQuery">
 	SELECT ?collection ?collectionLabel
 	WHERE {
@@ -164,7 +168,6 @@
 	FILTER (lang(?collectionLabel)="<xsl:value-of select="$lang"/>")
 	}
       </xsl:variable>
-      <!-- Secondly, execute the SPARQL query -->
       <xsl:for-each select="sparql:sparqlModel($model,concat(sparql:commonPrefixes(),string($sparqlQuery)))/results:results/results:result">
 	(<xsl:value-of select="results:binding[@name='collectionLabel']"/>)
       </xsl:for-each>
