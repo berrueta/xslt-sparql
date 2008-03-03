@@ -13,12 +13,13 @@
   <xsl:template match="/">
 <!--    <xsl:apply-templates select="sparql:sparqlEndpoint('http://www4.wiwiss.fu-berlin.de/is-group/sparql', concat(sparql:commonPrefixes(), 'SELECT ?x ?y ?z WHERE { ?x rdfs:label ?z }'))"/> -->
     <xsl:apply-templates
-	select="sparql:sparql('http://www.berrueta.net/foaf.rdf', concat(sparql:commonPrefixes(),
+	select="sparql:sparql(concat(sparql:commonPrefixes(),
 		'SELECT ?name ?mbox_sha1sum ?homepage
-		WHERE { &lt;http://www.berrueta.net/foaf.rdf#me&gt; foaf:knows ?x .
+		FROM &lt;http://www.ivan-herman.net/foaf.rdf&gt;
+		WHERE { &lt;http://www.ivan-herman.net/Ivan_Herman&gt; foaf:knows ?x .
 		?x foaf:name ?name .
-		?x foaf:mbox_sha1sum ?mbox_sha1sum .
 		OPTIONAL {
+		  ?x foaf:mbox_sha1sum ?mbox_sha1sum .
 		  ?x foaf:homepage ?homepage
 		}}'))"/>
   </xsl:template>
