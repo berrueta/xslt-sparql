@@ -83,14 +83,14 @@
 	<ul class="vocabulary">
 	  <xsl:variable name="nestedBlock">
 	  <xsl:apply-templates
-	      select="sparql:sparqlModel($model, concat(sparql:commonPrefixes(),
+	      select="sparql:sparqlModel(concat(sparql:commonPrefixes(),
 		      'SELECT ?concept ?prefLabel
 	 	       WHERE {
                           ?x skos:hasTopConcept ?concept .
 		          ?concept skos:prefLabel ?prefLabel .
 		          FILTER (lang(?prefLabel)=&quot;',$lang,'&quot;)
                        }
-		       ORDER BY ?prefLabel'))/results:results/results:result"
+		       ORDER BY ?prefLabel'), $model)/results:results/results:result"
 	      mode="prefLabelEntry">
 	    <xsl:with-param name="model" select="$model"/>
 	  </xsl:apply-templates>
@@ -112,25 +112,25 @@
 		    select="normalize-space(results:binding[@name='concept'])"/>
       <ul>
 	<xsl:apply-templates mode="relatedTerms"
-			     select="sparql:sparqlModel($model, concat(sparql:commonPrefixes(),
+			     select="sparql:sparqlModel(concat(sparql:commonPrefixes(),
 				     'SELECT ?relatedConcept ?prefLabel
 				      WHERE {
 				         &lt;',$conceptUri,'&gt; skos:related ?relatedConcept .
 				         ?relatedConcept skos:prefLabel ?prefLabel .
 				         FILTER (lang(?prefLabel)=&quot;',$lang,'&quot;)
 				      }
-				      ORDER BY ?prefLabel'))/results:results/results:result">
+				      ORDER BY ?prefLabel'), $model)/results:results/results:result">
 	  <xsl:with-param name="model" select="$model"/>
 	</xsl:apply-templates>
 	<xsl:variable name="narrowerConcepts"
-		      select="sparql:sparqlModel($model, concat(sparql:commonPrefixes(),
+		      select="sparql:sparqlModel(concat(sparql:commonPrefixes(),
 				     'SELECT ?concept ?prefLabel
 				      WHERE {
 				         &lt;',$conceptUri,'&gt; skos:narrower ?concept .
 				         ?concept skos:prefLabel ?prefLabel .
 				         FILTER (lang(?prefLabel)=&quot;',$lang,'&quot;)
 				      }
-				      ORDER BY ?prefLabel'))/results:results/results:result" />
+				      ORDER BY ?prefLabel'), $model)/results:results/results:result" />
 	<xsl:call-template name="findSuitableCollection">
 	  <xsl:with-param name="model" select="$model"/>
 	  <xsl:with-param name="forConcepts" select="$narrowerConcepts"/>
@@ -168,7 +168,7 @@
 	FILTER (lang(?collectionLabel)="<xsl:value-of select="$lang"/>")
 	}
       </xsl:variable>
-      <xsl:for-each select="sparql:sparqlModel($model,concat(sparql:commonPrefixes(),string($sparqlQuery)))/results:results/results:result">
+      <xsl:for-each select="sparql:sparqlModel(concat(sparql:commonPrefixes(),string($sparqlQuery)), $model)/results:results/results:result">
 	(<xsl:value-of select="results:binding[@name='collectionLabel']"/>)
       </xsl:for-each>
     </xsl:if>
