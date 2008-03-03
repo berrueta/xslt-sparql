@@ -118,7 +118,7 @@ public class XalanExt {
 		}
 	}
 
-	public Node sparqlModel(ExpressionContext ec, Object model, String queryStr) {
+    public Node sparqlModel(ExpressionContext ec, String queryStr, Object model) {
 		try {
 			Query query = QueryFactory.create(queryStr);
 			QueryExecution qe = QueryExecutionFactory.create(query, (Model) model);
@@ -131,7 +131,7 @@ public class XalanExt {
 			throw new RuntimeException(e);
 		}    }
 
-	public Node sparqlEndpoint(ExpressionContext ec, String endpoint, String queryStr) {
+    public Node sparqlEndpoint(ExpressionContext ec, String queryStr, String endpoint) {
 		try {
 			Query query = QueryFactory.create(queryStr);
 			QueryExecution qe = QueryExecutionFactory.sparqlService(endpoint, query);
@@ -145,11 +145,25 @@ public class XalanExt {
 		}
 	}
 
-	public Node sparql(ExpressionContext ex, String file, String queryStr) {
+        public Node sparql(ExpressionContext ex, String queryStr) {
+		try {
+			Query query = QueryFactory.create(queryStr);
+			QueryExecution qe = QueryExecutionFactory.create(query);
+			return executeAndSerializeAsXml(qe);
+		} catch (RuntimeException e) {
+			logger.error("Runtime error", e);
+			throw e;
+		} catch (Exception e) {
+			logger.error("Error", e);
+			throw new RuntimeException(e);
+		}	        
+        }
+
+    public Node sparql(ExpressionContext ex, String queryStr, String file) {
 		return sparql(ex, file, queryStr, null);
 	}
 
-	public Node sparql(ExpressionContext ec, String file, String queryStr, String rdfLang) {
+	public Node sparql(ExpressionContext ec, String queryStr, String file, String rdfLang) {
 		try {            
 			Query query = QueryFactory.create(queryStr);
 			Model model = ModelFactory.createDefaultModel();

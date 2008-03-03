@@ -81,14 +81,14 @@
 	<h1>Vocabulary: alphabetical index</h1>
 	<ul class="vocabulary">
 	  <xsl:apply-templates
-	      select="sparql:sparqlModel($model, concat(sparql:commonPrefixes(),
+	      select="sparql:sparqlModel(concat(sparql:commonPrefixes(),
 		      'SELECT ?concept ?label ?prefLabel
 		      WHERE {{ ?concept skos:prefLabel ?label
 			      } UNION {
 			      ?concept skos:prefLabel ?prefLabel .
 			      ?concept skos:altLabel ?label } .
 			      FILTER (lang(?label) = &quot;',$lang,'&quot;)
-                      }'))/results:results/results:result"
+                      }'), $model)/results:results/results:result"
 	      mode="entry">
 	    <xsl:sort select="results:binding[@name='label']"/>
 	    <xsl:with-param name="model" select="$model"/>
@@ -121,7 +121,7 @@
 		      FILTER (lang(?label) = &quot;',$lang,'&quot;) }
 		      ORDER BY ?priority ?label')"/>
 	  <ul class="description">
-	    <xsl:apply-templates select="sparql:sparqlModel($model,$sparqlQuery)/results:results/results:result" mode="description"/>
+	    <xsl:apply-templates select="sparql:sparqlModel($sparqlQuery,$model)/results:results/results:result" mode="description"/>
 	  </ul>
 	</xsl:otherwise>
       </xsl:choose>
