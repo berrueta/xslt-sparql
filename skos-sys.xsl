@@ -3,7 +3,8 @@
 		xmlns:results="http://www.w3.org/2005/sparql-results#"
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:sparql="XalanExt"
-                extension-element-prefixes="sparql"
+                xmlns:sparqlModel="XalanModelExt"
+                extension-element-prefixes="sparql sparqlModel"
                 version="2.0">
 
   <!-- *********************************************************
@@ -52,20 +53,24 @@
     <xalan:script lang="javaclass" src="xalan://net.berrueta.xsltsparql.XalanExt"/>
   </xalan:component>
 
+  <xalan:component prefix="sparqlModel">
+    <xalan:script lang="javaclass" src="xalan://net.berrueta.xsltsparql.XalanModelExt"/>
+  </xalan:component>
+
   <xsl:template match="/">
 <!--    <xsl:variable name="originalModel"
 		  select="sparql:readModel($rdf-file)"/> -->
     <xsl:variable name="originalModel"
-		  select="sparql:readModel(.)"/>
+		  select="sparqlModel:readModel(.)"/>
     <xsl:variable name="complementaryModel"
-		  select="sparql:parseString('
+		  select="sparqlModel:parseString('
 			  @prefix skos: &lt;http://www.w3.org/2004/02/skos/core#&gt;.
 			  @prefix compl: &lt;http://berrueta.net/skos-compl#&gt;.
 			  skos:broader compl:abbr &quot;BT&quot;.
 			  skos:narrower compl:abbr &quot;NT&quot;.
 			  skos:related compl:abbr &quot;RT&quot;.', 'N3')"/>
     <xsl:variable name="model"
-		  select="sparql:mergeModels($originalModel, $complementaryModel)"/>
+		  select="sparqlModel:mergeModels($originalModel, $complementaryModel)"/>
     <html>
       <head>
 	<title>Vocabulary: systematic display</title>
@@ -83,7 +88,7 @@
 	<ul class="vocabulary">
 	  <xsl:variable name="nestedBlock">
 	  <xsl:apply-templates
-	      select="sparql:sparqlModel(concat(sparql:commonPrefixes(),
+	      select="sparqlModel:sparqlModel(concat(sparql:commonPrefixes(),
 		      'SELECT ?concept ?prefLabel
 	 	       WHERE {
                           ?x skos:hasTopConcept ?concept .
@@ -112,7 +117,7 @@
 		    select="normalize-space(results:binding[@name='concept'])"/>
       <ul>
 	<xsl:apply-templates mode="relatedTerms"
-			     select="sparql:sparqlModel(concat(sparql:commonPrefixes(),
+			     select="sparqlModel:sparqlModel(concat(sparql:commonPrefixes(),
 				     'SELECT ?relatedConcept ?prefLabel
 				      WHERE {
 				         &lt;',$conceptUri,'&gt; skos:related ?relatedConcept .
@@ -123,7 +128,7 @@
 	  <xsl:with-param name="model" select="$model"/>
 	</xsl:apply-templates>
 	<xsl:variable name="narrowerConcepts"
-		      select="sparql:sparqlModel(concat(sparql:commonPrefixes(),
+		      select="sparqlModel:sparqlModel(concat(sparql:commonPrefixes(),
 				     'SELECT ?concept ?prefLabel
 				      WHERE {
 				         &lt;',$conceptUri,'&gt; skos:narrower ?concept .
@@ -168,7 +173,7 @@
 	FILTER (lang(?collectionLabel)="<xsl:value-of select="$lang"/>")
 	}
       </xsl:variable>
-      <xsl:for-each select="sparql:sparqlModel(concat(sparql:commonPrefixes(),string($sparqlQuery)), $model)/results:results/results:result">
+      <xsl:for-each select="sparqlModel:sparqlModel(concat(sparql:commonPrefixes(),string($sparqlQuery)), $model)/results:results/results:result">
 	(<xsl:value-of select="results:binding[@name='collectionLabel']"/>)
       </xsl:for-each>
     </xsl:if>
