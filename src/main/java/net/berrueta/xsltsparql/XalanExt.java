@@ -4,6 +4,8 @@ import org.apache.log4j.Logger;
 import org.apache.xalan.extensions.ExpressionContext;
 import org.w3c.dom.Node;
 
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.DatasetFactory;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -65,15 +67,14 @@ public class XalanExt extends JenaSparqlRunner {
 	}
 
 	public Node sparql(ExpressionContext ex, String queryStr, String file) {
-		return sparql(ex, file, queryStr, null);
+		return sparql(ex, queryStr, file, null);
 	}
 
 	public Node sparql(ExpressionContext ec, String queryStr, String file, String rdfLang) {
 		try {            
 			Query query = QueryFactory.create(queryStr);
-			Model model = ModelFactory.createDefaultModel();
-			model.read(file,rdfLang);
-			QueryExecution qe = QueryExecutionFactory.create(query, model);
+			Dataset dataset = DatasetFactory.create(file);
+			QueryExecution qe = QueryExecutionFactory.create(query, dataset);
 			return executeAndSerializeAsXml(qe, query);
 		} catch (RuntimeException e) {
 			logger.error("Runtime error", e);
