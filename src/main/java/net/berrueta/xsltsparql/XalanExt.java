@@ -122,7 +122,7 @@ public class XalanExt {
 		try {
 			Query query = QueryFactory.create(queryStr);
 			QueryExecution qe = QueryExecutionFactory.create(query, (Model) model);
-			return executeAndSerializeAsXml(qe);
+			return executeAndSerializeAsXml(qe, query);
 		} catch (RuntimeException e) {
 			logger.error("Runtime error", e);
 			throw e;
@@ -135,7 +135,7 @@ public class XalanExt {
 		try {
 			Query query = QueryFactory.create(queryStr);
 			QueryExecution qe = QueryExecutionFactory.sparqlService(endpoint, query);
-			return executeAndSerializeAsXml(qe);
+			return executeAndSerializeAsXml(qe, query);
 		} catch (RuntimeException e) {
 			logger.error("Runtime error", e);
 			throw e;
@@ -149,7 +149,7 @@ public class XalanExt {
 		try {
 			Query query = QueryFactory.create(queryStr);
 			QueryExecution qe = QueryExecutionFactory.create(query);
-			return executeAndSerializeAsXml(qe);
+			return executeAndSerializeAsXml(qe, query);
 		} catch (RuntimeException e) {
 			logger.error("Runtime error", e);
 			throw e;
@@ -169,7 +169,7 @@ public class XalanExt {
 			Model model = ModelFactory.createDefaultModel();
 			model.read(file,rdfLang);
 			QueryExecution qe = QueryExecutionFactory.create(query, model);
-			return executeAndSerializeAsXml(qe);
+			return executeAndSerializeAsXml(qe, query);
 		} catch (RuntimeException e) {
 			logger.error("Runtime error", e);
 			throw e;
@@ -179,13 +179,22 @@ public class XalanExt {
 		}
 	}
 
-	private Node executeAndSerializeAsXml(QueryExecution qe) throws SAXException, IOException, ParserConfigurationException {
-		String xmlResult = ResultSetFormatter.asXMLString(qe.execSelect());
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		dbf.setNamespaceAware(true);
-		Reader reader = new StringReader(xmlResult);
-		Document d = dbf.newDocumentBuilder().parse(new InputSource(reader));
-		return d.getFirstChild();
+    private Node executeAndSerializeAsXml(QueryExecution qe, Query query) throws SAXException, IOException, ParserConfigurationException {
+	String xmlResult = null;
+	    if (query.getQueryType() == Query.QueryTypeSelect) {
+		xmlResult = ResultSetFormatter.asXMLString(qe.execSelect());
+	    }
+	    else if (query.getQueryType() == Query.QueryTypeAsk) {
+		xmlResult = ResultSetFormatter.asXMLString(qe.execAsk());
+	    }
+	    else {
+		throw new IllegalArgumentException("Only SELECT and ASK queries are allowed");
+	    }
+	    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+	    dbf.setNamespaceAware(true);
+	    Reader reader = new StringReader(xmlResult);
+	    Document d = dbf.newDocumentBuilder().parse(new InputSource(reader));
+	    return d.getFirstChild();
 	}
 
 }
