@@ -10,8 +10,6 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 public class XalanExt extends JenaSparqlRunner {
 
@@ -67,10 +65,6 @@ public class XalanExt extends JenaSparqlRunner {
 	}
 
 	public Node sparql(ExpressionContext ex, String queryStr, String file) {
-		return sparql(ex, queryStr, file, null);
-	}
-
-	public Node sparql(ExpressionContext ec, String queryStr, String file, String rdfLang) {
 		try {            
 			Query query = QueryFactory.create(queryStr);
 			Dataset dataset = DatasetFactory.create(file);
