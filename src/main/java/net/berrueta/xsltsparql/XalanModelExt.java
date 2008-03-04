@@ -15,9 +15,9 @@ import com.hp.hpl.jena.rdf.arp.DOM2Model;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-public class XalanJenaModelExt extends JenaSparqlRunner {
+public class XalanModelExt extends JenaSparqlRunner {
 
-	private static final Logger logger = Logger.getLogger(XalanJenaModelExt.class);
+	private static final Logger logger = Logger.getLogger(XalanModelExt.class);
 
 	public Object readModel(ExpressionContext ec, String url) {
 		return readModel(ec, url, null);
