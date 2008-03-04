@@ -1,32 +1,17 @@
 package net.berrueta.xsltsparql;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringBufferInputStream;
-import java.io.StringReader;
-import java.io.InputStream;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.log4j.Logger;
 import org.apache.xalan.extensions.ExpressionContext;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.arp.DOM2Model;
 
-public class XalanExt {
+public class XalanExt extends JenaSparqlRunner {
 
 	private static final Logger logger = Logger.getLogger(XalanExt.class);
 
@@ -51,87 +36,7 @@ public class XalanExt {
 		return COMMON_PREFIXES;
 	}
 
-	public Object readModel(ExpressionContext ec, String url) {
-		return readModel(ec, url, null);
-	}
-
-	public Object readModel(ExpressionContext ec, String url, String rdfLang) {
-		try {
-			Model model = ModelFactory.createDefaultModel();
-			model.read(url,rdfLang);
-			return model;
-		} catch (Exception e) {
-			logger.error("Error", e);
-			throw new RuntimeException(e);
-		}
-	}
-
-	public Object readModel(ExpressionContext ec, Node node) {
-		try {
-			Model model = ModelFactory.createDefaultModel();
-			DOM2Model dom2model = DOM2Model.createD2M("", model);
-			dom2model.load(node);
-			return model;
-		} catch (Exception e) {
-			logger.error("Error", e);
-			throw new RuntimeException(e);
-		}
-	}
-
-	public Object addToModel(ExpressionContext ec, Object model, String url) {
-		return addToModel(ec, model, url, null);
-	}
-
-	public Object addToModel(ExpressionContext ec, Object model, String url, String rdfLang) {
-		try {
-			Model newModel = ModelFactory.createDefaultModel();
-			newModel.add((Model)model);
-			newModel.read(url,rdfLang);
-			return newModel;
-		} catch (Exception e) {
-			logger.error("Error", e);
-			throw new RuntimeException(e);
-		}
-	}
-
-	public Object mergeModels(ExpressionContext ec, Object model1, Object model2) {
-		Model newModel = ModelFactory.createDefaultModel();
-		newModel.add((Model)model1);
-		newModel.add((Model)model2);
-		return newModel;
-	}
-
-	public Object parseString(ExpressionContext ec, String str) {
-		return parseString(ec, str, null);
-	}
-
-	public Object parseString(ExpressionContext ec, String str, String rdfLang) {
-		logger.debug("Parsing " + str + " as " + rdfLang);
-		try {
-			Model newModel = ModelFactory.createDefaultModel();
-			InputStream is = new StringBufferInputStream(str);
-			newModel.read(is, "", rdfLang);
-			return newModel;
-		} catch (Exception e) {
-			logger.error("Error", e);
-			throw new RuntimeException(e);
-		}
-	}
-
-    public Node sparqlModel(ExpressionContext ec, String queryStr, Object model) {
-		try {
-			Query query = QueryFactory.create(queryStr);
-			QueryExecution qe = QueryExecutionFactory.create(query, (Model) model);
-			return executeAndSerializeAsXml(qe, query);
-		} catch (RuntimeException e) {
-			logger.error("Runtime error", e);
-			throw e;
-		} catch (Exception e) {
-			logger.error("Error", e);
-			throw new RuntimeException(e);
-		}    }
-
-    public Node sparqlEndpoint(ExpressionContext ec, String queryStr, String endpoint) {
+	public Node sparqlEndpoint(ExpressionContext ec, String queryStr, String endpoint) {
 		try {
 			Query query = QueryFactory.create(queryStr);
 			QueryExecution qe = QueryExecutionFactory.sparqlService(endpoint, query);
@@ -145,7 +50,7 @@ public class XalanExt {
 		}
 	}
 
-        public Node sparql(ExpressionContext ex, String queryStr) {
+	public Node sparql(ExpressionContext ex, String queryStr) {
 		try {
 			Query query = QueryFactory.create(queryStr);
 			QueryExecution qe = QueryExecutionFactory.create(query);
@@ -157,9 +62,9 @@ public class XalanExt {
 			logger.error("Error", e);
 			throw new RuntimeException(e);
 		}	        
-        }
+	}
 
-    public Node sparql(ExpressionContext ex, String queryStr, String file) {
+	public Node sparql(ExpressionContext ex, String queryStr, String file) {
 		return sparql(ex, file, queryStr, null);
 	}
 
@@ -177,24 +82,6 @@ public class XalanExt {
 			logger.error("Error", e);
 			throw new RuntimeException(e);
 		}
-	}
-
-    private Node executeAndSerializeAsXml(QueryExecution qe, Query query) throws SAXException, IOException, ParserConfigurationException {
-	String xmlResult = null;
-	    if (query.getQueryType() == Query.QueryTypeSelect) {
-		xmlResult = ResultSetFormatter.asXMLString(qe.execSelect());
-	    }
-	    else if (query.getQueryType() == Query.QueryTypeAsk) {
-		xmlResult = ResultSetFormatter.asXMLString(qe.execAsk());
-	    }
-	    else {
-		throw new IllegalArgumentException("Only SELECT and ASK queries are allowed");
-	    }
-	    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-	    dbf.setNamespaceAware(true);
-	    Reader reader = new StringReader(xmlResult);
-	    Document d = dbf.newDocumentBuilder().parse(new InputSource(reader));
-	    return d.getFirstChild();
 	}
 
 }
