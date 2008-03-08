@@ -67,8 +67,9 @@ public class XalanExt extends JenaSparqlRunner {
 	public Node sparql(ExpressionContext ex, String queryStr, String file) {
 		try {            
 			Query query = QueryFactory.create(queryStr);
-			Dataset dataset = DatasetFactory.create(file);
-			QueryExecution qe = QueryExecutionFactory.create(query, dataset);
+			query.addGraphURI(file);
+			//Dataset dataset = DatasetFactory.create(file);
+			QueryExecution qe = QueryExecutionFactory.create(query);
 			return executeAndSerializeAsXml(qe, query);
 		} catch (RuntimeException e) {
 			logger.error("Runtime error", e);
