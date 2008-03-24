@@ -7,7 +7,16 @@
 
   <name>XSLT-SPARQL extension function</name>
   <description>A set of extension functions for XSLT that allow to query SPARQL data sources</description>
+  <url>http://berrueta.net/research/xsltsparql</url>
   <packaging>jar</packaging>
+  <developers>
+    <developer>
+      <id>berrueta</id>
+      <name>Diego Berrueta</name>
+      <email>diego@berrueta.net</email>
+      <url>http://berrueta.net/</url>
+    </developer>
+  </developers>
 
   <build>
 
@@ -24,11 +33,19 @@
       </plugin>
 
       <plugin>
+	<groupId>org.codehaus.mojo</groupId>
+	<artifactId>jalopy-maven-plugin</artifactId>
+	<!--version>1.0-alpha-1</version-->
+      </plugin>
+
+      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
 	  <descriptorRefs>
 	    <descriptorRef>bin</descriptorRef>
             <descriptorRef>src</descriptorRef>
+	    <descriptorRef>jar-with-dependencies</descriptorRef>
+	    <descriptorRef>project</descriptorRef>
           </descriptorRefs>
         </configuration>
       </plugin>
@@ -36,6 +53,17 @@
     </plugins>
   </build>
 
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jxr-maven-plugin</artifactId>
+      </plugin>      
+    </plugins>
+  </reporting>
 
   <dependencies>
     <dependency>
