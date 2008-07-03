@@ -116,6 +116,8 @@
       <xsl:variable name="conceptUri"
 		    select="normalize-space(results:binding[@name='concept'])"/>
       <ul>
+
+        <!-- prints related terms -->
 	<xsl:apply-templates mode="relatedTerms"
 			     select="sparqlModel:sparqlModel(concat(sparql:commonPrefixes(),
 				     'SELECT ?relatedConcept ?prefLabel
@@ -127,20 +129,59 @@
 				      ORDER BY ?prefLabel'), $model)/results:results/results:result">
 	  <xsl:with-param name="model" select="$model"/>
 	</xsl:apply-templates>
-	<xsl:variable name="narrowerConcepts"
-		      select="sparqlModel:sparqlModel(concat(sparql:commonPrefixes(),
+
+        <!-- find every collection which contain at least one
+             child (NT) of the current concept -->
+        <xsl:variable name="collections"
+                      select="sparqlModel:sparqlModel(concat(sparql:commonPrefixes(),
+                                     'SELECT DISTINCT ?collection ?collectionLabel
+                                      WHERE {
+                                         ?collection rdf:type    skos:Collection  .
+                                         ?collection rdfs:label  ?collectionLabel .
+                                         &lt;',$conceptUri,'&gt; skos:narrower ?child .
+                                         ?collection skos:member ?child .
+				         FILTER (lang(?collectionLabel)=&quot;',$lang,'&quot;)
+                                      }
+                                      ORDER BY ?collectionLabel
+                                      '), $model)/results:results/results:result" />
+        <xsl:for-each select="$collections">
+          <li>(<xsl:value-of select="results:binding[@name='collectionLabel']"/>)</li>
+          <ul>
+            <!-- find every child concept that belong to the current
+                 collection -->
+            <xsl:variable name="childMembers"
+                        select="sparqlModel:sparqlModel(concat(sparql:commonPrefixes(),
 				     'SELECT ?concept ?prefLabel
 				      WHERE {
 				         &lt;',$conceptUri,'&gt; skos:narrower ?concept .
 				         ?concept skos:prefLabel ?prefLabel .
+                                         &lt;',normalize-space(results:binding[@name='collection']),'&gt; skos:member ?concept .
 				         FILTER (lang(?prefLabel)=&quot;',$lang,'&quot;)
 				      }
 				      ORDER BY ?prefLabel'), $model)/results:results/results:result" />
-	<xsl:call-template name="findSuitableCollection">
-	  <xsl:with-param name="model" select="$model"/>
-	  <xsl:with-param name="forConcepts" select="$narrowerConcepts"/>
-	</xsl:call-template>
-	<xsl:apply-templates select="$narrowerConcepts" mode="prefLabelEntry">	
+            <xsl:apply-templates select="$childMembers" mode="prefLabelEntry">	
+              <xsl:with-param name="model" select="$model"/>
+            </xsl:apply-templates>
+          </ul>
+        </xsl:for-each>
+
+        <!-- prints all the child concepts which are not in any
+             collection -->
+        <xsl:variable name="uncollectedNarrowerConcepts"
+                      select="sparqlModel:sparqlModel(concat(sparql:commonPrefixes(),
+				     'SELECT ?concept ?prefLabel
+				      WHERE {
+				         &lt;',$conceptUri,'&gt; skos:narrower ?concept .
+				         ?concept skos:prefLabel ?prefLabel .
+                                         OPTIONAL {
+                                           ?collection rdf:type skos:Collection .
+                                           ?collection skos:member ?concept
+                                         } .
+				         FILTER (lang(?prefLabel)=&quot;',$lang,'&quot;) .
+                                         FILTER ( !bound(?collection))
+				      }
+				      ORDER BY ?prefLabel'), $model)/results:results/results:result" />
+	<xsl:apply-templates select="$uncollectedNarrowerConcepts" mode="prefLabelEntry">	
 	  <xsl:with-param name="model" select="$model"/>
 	</xsl:apply-templates>
       </ul>
@@ -151,32 +192,6 @@
     <li>
       RT <xsl:value-of select="results:binding[@name='prefLabel']"/>
     </li>
-  </xsl:template>
-
-  <!-- This named template prints a heading for the list of
-       narrower concepts in the tree. The title of the heading
-       is taken from the label of a collection which contains
-       all the narrower concepts -->
-
-  <xsl:template name="findSuitableCollection">
-    <xsl:param name="model"/>
-    <xsl:param name="forConcepts"/>
-    <xsl:if test="count($forConcepts) &gt; 0">
-      <xsl:variable name="sparqlQuery">
-	SELECT ?collection ?collectionLabel
-	WHERE {
-	?collection rdf:type skos:Collection .
-	?collection rdfs:label ?collectionLabel .
-	<xsl:for-each select="$forConcepts">
-	  ?collection skos:member &lt;<xsl:value-of select="normalize-space(results:binding[@name='concept'])"/>&gt; .
-	</xsl:for-each>
-	FILTER (lang(?collectionLabel)="<xsl:value-of select="$lang"/>")
-	}
-      </xsl:variable>
-      <xsl:for-each select="sparqlModel:sparqlModel(concat(sparql:commonPrefixes(),string($sparqlQuery)), $model)/results:results/results:result">
-	(<xsl:value-of select="results:binding[@name='collectionLabel']"/>)
-      </xsl:for-each>
-    </xsl:if>
   </xsl:template>
 
   <!-- Second pass ******************************************* -->
