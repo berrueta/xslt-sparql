@@ -12,13 +12,14 @@
 
   <xsl:variable name="query"><![CDATA[
     SELECT ?name ?person ?img
+    FROM <http://dbpedia.org>
     WHERE {
        ?person dcterms:subject   <http://dbpedia.org/resource/Category:Spanish_film_actors> ;
                rdfs:label     ?name ;
                foaf:depiction ?img .
        FILTER (lang(?name)="es")
     }
-    ORDER BY ?name   
+    ORDER BY ?name
     LIMIT 20 
   ]]></xsl:variable>
 
@@ -40,7 +41,7 @@
       <xsl:value-of select="results:binding[@name='name']"/>
       <img>
 	<xsl:attribute name="src">
-	  <xsl:value-of select="results:binding[@name='img']"/>
+	  <xsl:value-of select="results:binding[@name='img']/results:uri"/>
 	</xsl:attribute>
       </img>
     </li>
