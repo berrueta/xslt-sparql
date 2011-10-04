@@ -10,17 +10,17 @@
     <xalan:script lang="javaclass" src="xalan://net.berrueta.xsltsparql.XalanExt"/>
   </xalan:component>
 
-  <xsl:variable name="query">
-    PREFIX cat: &lt;http://dbpedia.org/resource/Category:&gt;
+  <xsl:variable name="query"><![CDATA[
     SELECT ?name ?person ?img
     WHERE {
-       ?person skos:subject   cat:Spanish_actors .
-       ?person rdfs:label     ?name .
-       ?person foaf:depiction ?img .
+       ?person dcterms:subject   <http://dbpedia.org/resource/Category:Spanish_film_actors> ;
+               rdfs:label     ?name ;
+               foaf:depiction ?img .
        FILTER (lang(?name)="es")
     }
-    ORDER BY ?name    
-  </xsl:variable>
+    ORDER BY ?name   
+    LIMIT 20 
+  ]]></xsl:variable>
 
   <xsl:template match="/">
     <html>
