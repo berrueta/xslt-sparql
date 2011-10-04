@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.berrueta</groupId>
   <artifactId>xslt-sparql</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
 
   <name>XSLT-SPARQL extension function</name>
   <description>A set of extension functions for XSLT that allow to query SPARQL data sources</description>
