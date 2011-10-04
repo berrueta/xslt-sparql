@@ -49,7 +49,7 @@ public class XalanExt extends JenaSparqlRunner {
 		"PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
 		"PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
 		"PREFIX dc: <http://purl.org/dc/elements/1.1/> " + 
-		"PREFIX dcterms: <http://purl.org/dc/terms/subject> " +
+		"PREFIX dcterms: <http://purl.org/dc/terms/> " +
 		"PREFIX doap: <http://usefulinc.com/ns/doap#> " + 
 		"PREFIX vcard: <http://www.w3.org/2001/vcard-rdf/3.0#> " +
 		"PREFIX skos: <http://www.w3.org/2004/02/skos/core#> " +
